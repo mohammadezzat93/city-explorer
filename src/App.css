@@ -1,3 +1,16 @@
+body{
+  background-color: #e4e4c4;
+}
+
+section{
+  padding: 15px;
+  background-color: rgb(15, 12, 12);
+  color : white
+}
+button{
+  margin-top: 10px;
+}
+
 .App {
   text-align: center;
 }
