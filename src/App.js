@@ -3,8 +3,9 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Alert } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import Header from './Header';
-import Footer from './Footer';
+import Header from './component/Header';
+import Footer from './component/Footer';
+import Weather from './component/Weather';
 import './App.css';
 
 class App extends React.Component {
@@ -17,7 +18,9 @@ class App extends React.Component {
             lon: '',
             displayName: '',
             mapFlag: false,
-            err: false
+            err: false,
+            forecast: {},
+            flageWeather: false
         }
     }
 
@@ -26,23 +29,35 @@ class App extends React.Component {
 
         let cityName = e.target.cityName.value;
 
-        let Key = 'pk.024f6e8bc1742f77c30108e11db494a8';
+        let Key = 'pk.0457957969e90c41969c65df34a35700';
         let URL = `https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${cityName}&zoom=18&format=json`;
-        //  console.log('Show', show);
+        let URL2 = `${process.env.PORT}/getWeatherinfo?cityName=${cityName}`;
 
 
         // 2 : axios
         try {
             let result = await axios.get(URL);
+            let result2 = await axios.get(URL2);
             console.log(result);
 
             this.setState({
                 displayName: result.data[0].display_name,
                 lat: result.data[0].lat,
                 lon: result.data[0].lon,
-                mapFlag: true
+                mapFlag: true,
+                flageWeather: true,
+                forecast: result2.data
 
             });
+        }
+        catch {
+            this.setState({
+                err: true
+            })
+        }
+
+        try {
+            // let result2 = await axios.get(URL2);
         }
         catch {
             this.setState({
@@ -72,16 +87,23 @@ class App extends React.Component {
                 <h5>{this.state.displayName}  is located at {this.state.lat} by {this.state.lon}</h5>
 
                 {this.state.mapFlag &&
-                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.024f6e8bc1742f77c30108e11db494a8&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
+                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.0457957969e90c41969c65df34a35700&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
                 }
 
+                {/* <h1>Welcome to {this.result2}</h1> */}
+
                 {this.state.err &&
-                        <>
+                    <>
                         <Alert>
                             Sorry, Can Not Found Location!
                         </Alert>
-                        </>
+                    </>
                 }
+
+                <Weather
+                    data={this.state.forecast}
+                    flageWeather={this.state.flageWeather}
+                />
 
                 <Footer />
             </>
