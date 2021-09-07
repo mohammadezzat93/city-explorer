@@ -1,3 +1,18 @@
+# Project Name : City Explorer
+
+**Author**: Mohammad Alhaj Ali
+**Version**: 1.0.3
+
+## Name of feature: fitch location
+
+## Estimate of time needed to complete: 4 hours
+
+## Start time:2.pm
+
+## Finish time:6.00pm
+
+## Actual time needed to complete: 7 hours
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -5,7 +5,7 @@ import { Form, Alert } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Header from './component/Header';
 import Footer from './component/Footer';
-import Weather from './component/Weather';
+// import Weather from './component/Weather';
 import './App.css';
 
 class App extends React.Component {
@@ -19,8 +19,6 @@ class App extends React.Component {
             displayName: '',
             mapFlag: false,
             err: false,
-            forecast: {},
-            flageWeather: false
         }
     }
 
@@ -29,15 +27,14 @@ class App extends React.Component {
 
         let cityName = e.target.cityName.value;
 
-        let Key = 'pk.0457957969e90c41969c65df34a35700';
+        let Key = process.env.REACT_APP_Key;
         let URL = `https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${cityName}&zoom=18&format=json`;
-        let URL2 = `${process.env.PORT}/getWeatherinfo?cityName=${cityName}`;
+
 
 
         // 2 : axios
         try {
             let result = await axios.get(URL);
-            let result2 = await axios.get(URL2);
             console.log(result);
 
             this.setState({
@@ -45,19 +42,8 @@ class App extends React.Component {
                 lat: result.data[0].lat,
                 lon: result.data[0].lon,
                 mapFlag: true,
-                flageWeather: true,
-                forecast: result2.data
 
             });
-        }
-        catch {
-            this.setState({
-                err: true
-            })
-        }
-
-        try {
-            // let result2 = await axios.get(URL2);
         }
         catch {
             this.setState({
@@ -87,7 +73,7 @@ class App extends React.Component {
                 <h5>{this.state.displayName}  is located at {this.state.lat} by {this.state.lon}</h5>
 
                 {this.state.mapFlag &&
-                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.0457957969e90c41969c65df34a35700&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
+                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
                 }
 
                 {/* <h1>Welcome to {this.result2}</h1> */}
@@ -99,11 +85,6 @@ class App extends React.Component {
                         </Alert>
                     </>
                 }
-
-                <Weather
-                    data={this.state.forecast}
-                    flageWeather={this.state.flageWeather}
-                />
 
                 <Footer />
             </>
