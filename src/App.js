@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Header from './component/Header';
 import Footer from './component/Footer';
 // import Weather from './component/Weather';
+import Movie from './component/Movie';
 import './App.css';
 
 class App extends React.Component {
@@ -19,6 +20,11 @@ class App extends React.Component {
             displayName: '',
             mapFlag: false,
             err: false,
+            weatherError: false,
+            Weather: false,
+            weatherArray: [],
+            movie: {},
+            movieFlag: false
         }
     }
 
@@ -27,6 +33,7 @@ class App extends React.Component {
 
         let cityName = e.target.cityName.value;
 
+        this.getWeather(cityName);
         let Key = process.env.REACT_APP_Key;
         let URL = `https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${cityName}&zoom=18&format=json`;
 
@@ -35,7 +42,7 @@ class App extends React.Component {
         // 2 : axios
         try {
             let result = await axios.get(URL);
-            console.log(result);
+            console.log('result', result);
 
             this.setState({
                 displayName: result.data[0].display_name,
@@ -53,6 +60,62 @@ class App extends React.Component {
 
     }
 
+    getWeather = async (cityName) => {
+
+        let URL2 = `https://city-explorer-api3.herokuapp.com/weather?cityName=${cityName}`;
+
+        try {
+            if (cityName === 'Amman' || cityName === 'Paris' || cityName === 'Seattle') {
+
+                let weatherData = await axios.get(URL2);
+
+                console.log('weatherData', weatherData.data);
+                console.log('helllllllllllo');
+
+                this.setState({
+                    weatherArray: weatherData.data,
+                    Weather: true,
+
+                })
+
+            }
+            else {
+                this.setState({
+                    weatherError: true
+                });
+            }
+
+        }
+        catch {
+            this.setState({
+                weatherError: true
+            });
+
+        }
+
+    }
+
+    getWeather = async (cityName) => {
+
+        let URL3 = `https://city-explorer-api3.herokuapp.com/Movie?cityName=${cityName}`;
+
+        try {
+            let movieURL = await axios.get(URL3);
+
+            this.setState({
+                movie: movieURL.data,
+                movieFlag: true
+
+            })
+        }
+        catch {
+            console.log('error');
+            this.setState({
+                err: true
+            })
+        }
+
+    }
 
     render() {
         return (
@@ -73,10 +136,8 @@ class App extends React.Component {
                 <h5>{this.state.displayName}  is located at {this.state.lat} by {this.state.lon}</h5>
 
                 {this.state.mapFlag &&
-                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
+                    <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
                 }
-
-                {/* <h1>Welcome to {this.result2}</h1> */}
 
                 {this.state.err &&
                     <>
@@ -85,6 +146,26 @@ class App extends React.Component {
                         </Alert>
                     </>
                 }
+
+                {/* {
+                    this.state.Weather && this.state.weatherArray.map(item => {
+                        return (
+                            <>
+                                <p>Date : {item.date}</p>
+                                <p>Description : {item.desc} </p>
+                            </>
+                        )
+
+                    })
+                } */}
+                <p> Display name : {this.state.displayName}</p>
+                <p>Lat : {this.state.lat}</p>
+                <p>Lon : {this.state.lon}</p>
+
+                {/* {<Weather />} */}
+
+                <Movie data={this.state.movie}
+                       movieFlag={this.state.movieFlag} />
 
                 <Footer />
             </>

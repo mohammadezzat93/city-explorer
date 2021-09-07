@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 class Weather extends React.Component{
@@ -5,10 +6,12 @@ class Weather extends React.Component{
     {
         return(
             <>
-         {this.props.flageWeather && this.props.data.map((item)=>(
+         {this.props.Weather &&
+         this.props.data.map((item)=>(
              <>
-             <p>data:{item.data}</p>
-             <p>des:{item.description}</p>
+             <p>{item.description}</p>
+             <p>{item.date}</p>
+             
              </>
          ))}
 
