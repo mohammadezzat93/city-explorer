@@ -5,9 +5,12 @@ import { Form, Alert } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Header from './component/Header';
 import Footer from './component/Footer';
-// import Weather from './component/Weather';
+import Weather from './component/Weather';
 import Movie from './component/Movie';
 import './App.css';
+import Card from 'react-bootstrap/Card';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 class App extends React.Component {
 
@@ -17,123 +20,66 @@ class App extends React.Component {
         this.state = {
             lat: '',
             lon: '',
-            displayName: '',
+            name: '',
             mapFlag: false,
             err: false,
             weatherError: false,
             Weather: false,
-            weatherArray: [],
-            movie: {},
+            weatherArr: [],
+            movieArr: [],
             movieFlag: false
         }
     }
 
     getData = async e => {
         e.preventDefault();
+        let cityName = e.target.name.value;
 
-        let cityName = e.target.cityName.value;
+        let myKey = process.env.REACT_APP_Key;
+        // let myKey2 = process.env.Weather_APP_Key;
+        // let myKey3 = process.env.movie_APP_Key;
+        const URL1 = `https://eu1.locationiq.com/v1/search.php?key=${myKey}&q=${cityName}&format=json`;
+        const URL2 = `https://city-explorer-api3.herokuapp.com/weather?city=${cityName}`;
+        const URL3 = `https://city-explorer-api3.herokuapp.com/movies?query=${cityName}`;
 
-        this.getWeather(cityName);
-        let Key = process.env.REACT_APP_Key;
-        let URL = `https://eu1.locationiq.com/v1/search.php?key=${Key}&q=${cityName}&zoom=18&format=json`;
-
-
-
-        // 2 : axios
         try {
-            let result = await axios.get(URL);
-            console.log('result', result);
-
+            let newLocation1 = await axios.get(URL1);
+            let newLocation2 = await axios.get(URL2);
+            let newMovie = await axios.get(URL3);
             this.setState({
-                displayName: result.data[0].display_name,
-                lat: result.data[0].lat,
-                lon: result.data[0].lon,
+                lat: newLocation1.data[0].lat,
+                lon: newLocation1.data[0].lon,
+                name: cityName,
+                weatherArr: newLocation2.data,
+                movieArr: newMovie.data,
                 mapFlag: true,
-
-            });
-        }
-        catch {
-            this.setState({
-                err: true
-            })
-        }
-
-    }
-
-    getWeather = async (cityName) => {
-
-        let URL2 = `https://city-explorer-api3.herokuapp.com/weather?cityName=${cityName}`;
-
-        try {
-            if (cityName === 'Amman' || cityName === 'Paris' || cityName === 'Seattle') {
-
-                let weatherData = await axios.get(URL2);
-
-                console.log('weatherData', weatherData.data);
-                console.log('helllllllllllo');
-
-                this.setState({
-                    weatherArray: weatherData.data,
-                    Weather: true,
-
-                })
-
-            }
-            else {
-                this.setState({
-                    weatherError: true
-                });
-            }
-
-        }
-        catch {
-            this.setState({
-                weatherError: true
             });
 
-        }
-
-    }
-
-    getWeather = async (cityName) => {
-
-        let URL3 = `https://city-explorer-api3.herokuapp.com/Movie?cityName=${cityName}`;
-
-        try {
-            let movieURL = await axios.get(URL3);
-
+            console.log(newLocation1.data);
+        } catch {
             this.setState({
-                movie: movieURL.data,
-                movieFlag: true
-
-            })
-        }
-        catch {
-            console.log('error');
-            this.setState({
-                err: true
-            })
+                err: true,
+            });
         }
 
-    }
+    };
 
     render() {
         return (
             <>
-
                 <Header />
 
                 <Form onSubmit={this.getData}>
                     <Form.Group className="mb-3" controlId="horned">
                         <Form.Label>Where Would you like to explor ?</Form.Label>
-                        <Form.Control type="text" name="cityName" placeholder="Name of The city" />
+                        <Form.Control type="text" name="name" placeholder="Name of The city" />
                         <Button variant="primary" type="submit">Explore !</Button>
 
                     </Form.Group>
                 </Form>
 
-                <h1>Welcome to {this.state.displayName}</h1>
-                <h5>{this.state.displayName}  is located at {this.state.lat} by {this.state.lon}</h5>
+                <h1>Welcome to {this.state.name}</h1>
+                <h5>{this.state.name}  is located at {this.state.lat} by {this.state.lon}</h5>
 
                 {this.state.mapFlag &&
                     <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
@@ -147,26 +93,67 @@ class App extends React.Component {
                     </>
                 }
 
-                {/* {
-                    this.state.Weather && this.state.weatherArray.map(item => {
-                        return (
-                            <>
-                                <p>Date : {item.date}</p>
-                                <p>Description : {item.desc} </p>
-                            </>
-                        )
+                {this.state.mapFlag && (
+                    <Weather
+                        weather={this.state.weatherArr.map((item) => {
+                            return (
+                                <>
+                                    <Alert><h3 className="date">Date: {item.date}</h3></Alert>
+                                    <Alert><h4 className="date">Description: {item.desc}</h4></Alert>
+                                </>
+                            );
+                        })}
+                    />
+                )}
+                <Row xs={1} md={3} className="g-4">
+                    {this.state.mapFlag && (
+                        <Movie
+                            movie={this.state.movieArr.map((item) => {
+                                return (
+                                    <>
+                                        {/* <p>Title: {item.title}</p>
+                                    <p>Overview: {item.overview}</p>
+                                    <p>Average_votes: {item.average_votes}</p>
+                                    <p>Total_votes: {item.total_votes}</p>
+                                    <p>Popularity: {item.popularity}</p>
+                                    <p>Released_on: {item.released_on}</p> */}
 
-                    })
-                } */}
-                <p> Display name : {this.state.displayName}</p>
-                <p>Lat : {this.state.lat}</p>
-                <p>Lon : {this.state.lon}</p>
 
-                {/* {<Weather />} */}
+                                        <Col>
+                                            <Card style={{ width: '25rem' }}>
 
-                <Movie data={this.state.movie}
-                       movieFlag={this.state.movieFlag} />
+                                                <Card.Img variant="top" src={item.image_url} width="200" height="200" />
 
+                                                <Card.Body className="description">
+
+                                                    <Card.Title className="title">Title: {item.title}</Card.Title>
+
+                                                    <Card.Text className="description"></Card.Text>
+
+                                                    <Card.Text className="description">
+                                                        Average_votes: 💖 {item.average_votes}
+                                                    </Card.Text>
+                                                    <Card.Text className="description">
+                                                        Total_votes: 💖 {item.total_votes}
+                                                    </Card.Text>
+                                                    <Card.Text className="description">
+                                                        Popularity: {item.popularity}
+                                                    </Card.Text>
+                                                    <Card.Text className="description">
+                                                        Released_on: {item.released_on}
+                                                    </Card.Text>
+
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+
+                                    </>
+                                );
+                            })}
+                        />
+                    )}
+                </Row>
+                <br></br>
                 <Footer />
             </>
         );
@@ -174,3 +161,4 @@ class App extends React.Component {
 }
 
 export default App;
+
