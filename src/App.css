@@ -10,6 +10,9 @@ section{
 button{
   margin-top: 10px;
 }
+.date{
+  color: brown;
+}
 
 .App {
   text-align: center;
