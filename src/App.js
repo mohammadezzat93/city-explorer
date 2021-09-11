@@ -39,8 +39,8 @@ class App extends React.Component {
         // let myKey2 = process.env.Weather_APP_Key;
         // let myKey3 = process.env.movie_APP_Key;
         const URL1 = `https://eu1.locationiq.com/v1/search.php?key=${myKey}&q=${cityName}&format=json`;
-        const URL2 = `https://city-explorer-api3.herokuapp.com/weather?city=${cityName}`;
-        const URL3 = `https://city-explorer-api3.herokuapp.com/movies?query=${cityName}`;
+        const URL2 = `https://city-explorer-api11.herokuapp.com/weather?city=${cityName}`;
+        const URL3 = `https://city-explorer-api11.herokuapp.com/movies?query=${cityName}`;
 
         try {
             let newLocation1 = await axios.get(URL1);
@@ -49,7 +49,7 @@ class App extends React.Component {
             this.setState({
                 lat: newLocation1.data[0].lat,
                 lon: newLocation1.data[0].lon,
-                name: cityName,
+                name: newLocation1.data[0].display_name,
                 weatherArr: newLocation2.data,
                 movieArr: newMovie.data,
                 mapFlag: true,
@@ -82,7 +82,9 @@ class App extends React.Component {
                 <h5>{this.state.name}  is located at {this.state.lat} by {this.state.lon}</h5>
 
                 {this.state.mapFlag &&
-                    <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
+                    // <img src={`https://maps.locationiq.com/v3/staticmap?key=${process.env.REACT_APP_Key}&center=${this.state.lat},${this.state.lon}&zoom=[1-18]&size=2000x400`} alt='map' />
+
+                    <img src={`https://maps.locationiq.com/v3/staticmap?key=pk.43fed3791d35ddb76aa14f749c6d3080&center=${this.state.lat},${this.state.lon}`} alt='map' />
                 }
 
                 {this.state.err &&
